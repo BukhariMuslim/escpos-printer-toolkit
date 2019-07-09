@@ -83,6 +83,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     // 居中
     var align_center_bytes  = new Buffer([27, 97, 1]);
     var align_left_bytes    = new Buffer([27, 97, 0]);
+    var align_right_bytes    = new Buffer([27, 97, 2]);
     // 设置行间距 默认值为8即1mm
     var default_space_bytes = new Buffer([27, 50]);
     var none_space_bytes    = new Buffer([27, 51, 0]);
@@ -93,6 +94,12 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     var moneybox_bytes      = new Buffer([27, 112, 7]);
     // 蜂鸣 { 27, 66, 次数， 时长 * 50ms }
     var beep_bytes          = new Buffer([ 27, 66, 3, 2 ])
+
+    var qr_model            = new Buffer([ 29, 40, 107, 4, 0, 49, 65, 50, 0 ]); //  27, 29, 121, 83, 48, 2
+    var qr_correction       = new Buffer([ 29, 40, 107, 3, 0, 49, 67, 8 ]); // 27, 29, 121, 83, 49, 0
+    // var qr_cell_size        = new Buffer([27, 29, 121, 83, 50, 3]);
+    var qr_cell_size_auto   = new Buffer([ 29, 40, 107, 3, 0, 49, 69, 48 ]); // 27, 29, 121, 68, 49, 3 
+    var qr_start            = new Buffer([ 29, 40, 107, 3, 0, 49, 81, 48 ]); // 27, 29, 121, 80
 
     var bytes = new BufferHelper();
     bytes.concat(init_printer_bytes);
@@ -168,9 +175,17 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
                 if (index != -1)
                 {
                     var url = text.substring(i + 4, index);
+                    var qrLength = url.length + 3
+                    var pL = qrLength % 256
+                    var pH = Math.floor(qrLength / 256)
                     bytes.concat(align_center_bytes);
                     bytes.concat(none_space_bytes);
+                    bytes.concat(qr_model);
+                    bytes.concat(qr_correction);
+                    bytes.concat(qr_cell_size_auto);
+                    bytes.concat(new Buffer([ 29, 40, 107, pL, pH, 49, 80, 48 ]));
                     bytes.concat(change_image_url_to_bytes(url));
+                    bytes.concat(qr_start);
                     bytes.concat(default_space_bytes);
                     bytes.concat(align_left_bytes);
                     i = index + 4;
