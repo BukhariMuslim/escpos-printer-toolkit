@@ -23,34 +23,34 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
         tailingLine: true,
         encoding: 'UTF8',
     }
-    // 初始化打印机
+    // Initialize the printer
     var init_printer_bytes = new Buffer([27, 64]);
-    // 读取设备状态
+    // Read the device status
     var check_state_bytes = new Buffer([29, 153]);
-    // 返回字符 1D 99 XX FF
-    // 其中XX的每位表示的意义
-    // 0  0:有纸 1:缺纸
-    // 1  0:合盖 1:开盖
-    // 2  0:温度正常 1:机芯过热
-    // 3  0:电量正常 1:电量低
-    // 4  0:未打印状态 1:打印状态
-    // 5  未定义
-    // 6  未定义
-    // 7  未定义
+    // Return character 1D 99 XX FF
+    // where the meaning of each of the XX representations
+    // 0 0: There is paper 1: out of paper
+    // 1 0: Cover 1: Open the cover
+    // 2 0: Normal temperature 1: Overheating of the movement
+    // 3 0: Battery is normal 1: Low battery
+    // 4 0: Unprinted state 1: Print status
+    // 5 undefined
+    // 6 undefined
+    // 7 undefined
 
-    // 正常打印模式
+    // normal print mode
     var init_bytes = new Buffer([27, 33, 0]);
-    // 放大字体
-    //<M></M>      中号字体（2倍高）
-    //<D></D>      中号字体（2倍宽）
-    //<B></B>      大号字体（2倍高宽）
-    //<C></C>      居中
-    //<CM></CM>    中号字体居中
-    //<CD></CD>    中号字体居中
-    //<CB></CB>    大号字体居中
-    //<QR></QR>  二维码图片地址
-    //<QRI></QRI>  二维码图片地址
-    //<PCN></PCN>  公众号
+    // Enlarge font
+    // <M></M> medium font (2 times higher)
+    // <D></D> medium font (2 times wide)
+    // <B></B> large font (2 times height)
+    // <C></C> centered
+    // <CM></CM> medium font centered
+    // <CD></CD> medium font centered
+    // <CB></CB> Large font centered
+    // <QR></QR> QR code image address
+    // <QRI></QRI> QR code image address
+    // <PCN></PCN> public number
     // var m_start_bytes       = new Buffer([27, 50, 27, 97, 0, 29, 33, 1]);
     // var m_end_bytes         = new Buffer([29, 33, 0]);
     // var b_start_bytes       = new Buffer([27, 50, 27, 97, 0, 29, 33, 17]);
@@ -66,7 +66,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     // var cb_start_bytes      = new Buffer([27, 50, 29, 33, 17, 27, 97, 1]);
     // var cb_end_bytes        = new Buffer([29, 33, 0]);
     var reset_bytes         = new Buffer([27, 97, 0, 29, 33, 0, 27, 50]);
-    //针对针式调整后
+    // After adjusting for the needle
     var m_start_bytes       = new Buffer([27, 33, 16, 28, 33, 8]);
     var m_end_bytes         = new Buffer([27, 33, 0, 28, 33, 0]);
     var b_start_bytes       = new Buffer([27, 33, 48, 28, 33, 12]);
@@ -80,19 +80,19 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     var d_start_bytes       = new Buffer([27, 33, 32, 28, 33, 4]);
     var d_end_bytes         = new Buffer([27, 33, 0, 28, 33, 0]);
 
-    // 居中
+    // centered
     var align_center_bytes  = new Buffer([27, 97, 1]);
     var align_left_bytes    = new Buffer([27, 97, 0]);
     var align_right_bytes    = new Buffer([27, 97, 2]);
-    // 设置行间距 默认值为8即1mm
+    // Set the line spacing default value of 8 or 1mm
     var default_space_bytes = new Buffer([27, 50]);
     var none_space_bytes    = new Buffer([27, 51, 0]);
     var b_space_bytes       = new Buffer([27, 51, 120]);
-    // 切纸
+    // Cut paper
     var cut_bytes           = new Buffer([27, 105]);
-    // 弹钱箱
+    // Play the cash box
     var moneybox_bytes      = new Buffer([27, 112, 7]);
-    // 蜂鸣 { 27, 66, 次数， 时长 * 50ms }
+    // Beep { 27, 66, times, duration * 50ms }
     var beep_bytes          = new Buffer([ 27, 66, 3, 2 ])
 
     var qr_model            = new Buffer([ 29, 40, 107, 4, 0, 49, 65, 50, 0 ]); //  27, 29, 121, 83, 48, 2
