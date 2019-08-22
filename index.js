@@ -95,10 +95,10 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     // Beep { 27, 66, times, duration * 50ms }
     var beep_bytes          = new Buffer([ 27, 66, 3, 2 ])
 
-    var qr_model            = new Buffer([ 29, 40, 107, 4, 0, 49, 65, 50, 0 ]); //  27, 29, 121, 83, 48, 2
-    var qr_correction       = new Buffer([ 29, 40, 107, 3, 0, 49, 67, 8 ]); // 27, 29, 121, 83, 49, 0
+    var qr_model            = new Buffer([ 29, 40, 107, 3, 0, 49, 65, 50, 0 ]); //  27, 29, 121, 83, 48, 2
+    var qr_module_size      = new Buffer([ 29, 40, 107, 3, 0, 49, 67, 16 ]); // 27, 29, 121, 83, 49, 0
     // var qr_cell_size        = new Buffer([27, 29, 121, 83, 50, 3]);
-    var qr_cell_size_auto   = new Buffer([ 29, 40, 107, 3, 0, 49, 69, 48 ]); // 27, 29, 121, 68, 49, 3 
+    var qr_correction       = new Buffer([ 29, 40, 107, 3, 0, 49, 69, 51 ]); // 27, 29, 121, 68, 49, 3 
     var qr_start            = new Buffer([ 29, 40, 107, 3, 0, 49, 81, 48 ]); // 27, 29, 121, 80
 
     var bytes = new BufferHelper();
@@ -181,8 +181,8 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
                     bytes.concat(align_center_bytes);
                     bytes.concat(none_space_bytes);
                     bytes.concat(qr_model);
+                    bytes.concat(qr_module_size);
                     bytes.concat(qr_correction);
-                    bytes.concat(qr_cell_size_auto);
                     bytes.concat(new Buffer([ 29, 40, 107, pL, pH, 49, 80, 48 ]));
                     bytes.concat(change_image_url_to_bytes(url));
                     bytes.concat(qr_start);
