@@ -17,11 +17,13 @@ var exchange_text_with_times = exports.exchange_text_with_times = function excha
 }
 
 var exchange_text = exports.exchange_text = function exchange_text(text, options){
-    options = options || {
-        beep: false,
+    options = {
+        beep: true,
         cut: true,
         tailingLine: true,
         encoding: 'UTF8',
+        isStar: true,
+        ...options,
     }
     // Initialize the printer
     var init_printer_bytes = new Buffer([27, 64]);
@@ -55,8 +57,10 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     // var m_end_bytes         = new Buffer([29, 33, 0]);
     // var b_start_bytes       = new Buffer([27, 50, 27, 97, 0, 29, 33, 17]);
     // var b_end_bytes         = new Buffer([29, 33, 0]);
-    var c_start_bytes       = new Buffer([27, 97, 1]);
-    var c_end_bytes         = new Buffer([]); // [ 27, 97, 0 ];
+    var set_charset         = new Buffer([27, 30, 70, 1]);
+    var new_line            = new Buffer([10]);
+    var c_start_bytes       = options.isStar ? new Buffer([27, 29, 97, 1]) : new Buffer([27, 97, 1]);
+    var c_end_bytes         = options.isStar ? new Buffer([27, 29, 97, 0]) : new Buffer([]); // [ 27, 97, 0 ];
     // var d_start_bytes       = new Buffer([27, 50, 27, 97, 0, 29, 33, 16]);
     // var d_end_bytes         = new Buffer([29, 33, 0]);
     // var cm_start_bytes      = new Buffer([27, 50, 29, 33, 1, 27, 97, 1]);
@@ -67,43 +71,46 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     // var cb_end_bytes        = new Buffer([29, 33, 0]);
     var reset_bytes         = new Buffer([27, 97, 0, 29, 33, 0, 27, 50]);
     // After adjusting for the needle
-    var m_start_bytes       = new Buffer([27, 33, 16, 28, 33, 8]);
-    var m_end_bytes         = new Buffer([27, 33, 0, 28, 33, 0]);
-    var b_start_bytes       = new Buffer([27, 33, 48, 28, 33, 12]);
-    var b_end_bytes         = new Buffer([27, 33, 0, 28, 33, 0]);
-    var cm_start_bytes      = new Buffer([27, 97, 1, 27, 33, 16, 28, 33, 8]);
-    var cm_end_bytes        = new Buffer([27, 33, 0, 28, 33, 0]);
-    var cb_start_bytes      = new Buffer([27, 97, 1, 27, 33, 48, 28, 33, 12]);
-    var cb_end_bytes        = new Buffer([27, 33, 0, 28, 33, 0]);
-    var cd_start_bytes      = new Buffer([27, 97, 1, 27, 33, 32, 28, 33, 4]);
-    var cd_end_bytes        = new Buffer([27, 33, 0, 28, 33, 0]);
-    var d_start_bytes       = new Buffer([27, 33, 32, 28, 33, 4]);
-    var d_end_bytes         = new Buffer([27, 33, 0, 28, 33, 0]);
+    var m_start_bytes       = options.isStar ? new Buffer([27, 105, 1, 0]) : new Buffer([27, 33, 16, 28, 33, 8]);
+    var m_end_bytes         = options.isStar ? new Buffer([27, 105, 0, 0]) : new Buffer([27, 33, 0, 28, 33, 0]);
+    var b_start_bytes       = options.isStar ? new Buffer([27, 105, 1, 1]) : new Buffer([27, 33, 48, 28, 33, 12]);
+    var b_end_bytes         = options.isStar ? new Buffer([27, 105, 0, 0]) : new Buffer([27, 33, 0, 28, 33, 0]);
+    var cm_start_bytes      = options.isStar ? new Buffer([27, 29, 97, 1, 27, 105, 1, 0]) : new Buffer([27, 97, 1, 27, 33, 16, 28, 33, 8]);
+    var cm_end_bytes        = options.isStar ? new Buffer([27, 105, 0, 0, 27, 29, 97, 0]) : new Buffer([27, 33, 0, 28, 33, 0]);
+    var cb_start_bytes      = options.isStar ? new Buffer([27, 29, 97, 1, 27, 105, 1, 1]) : new Buffer([27, 97, 1, 27, 33, 48, 28, 33, 12]);
+    var cb_end_bytes        = options.isStar ? new Buffer([27, 105, 0, 0, 27, 29, 97, 0]) : new Buffer([27, 33, 0, 28, 33, 0]);
+    var cd_start_bytes      = options.isStar ? new Buffer([27, 29, 97, 1, 27, 105, 0, 1]) : new Buffer([27, 97, 1, 27, 33, 32, 28, 33, 4]);
+    var cd_end_bytes        = options.isStar ? new Buffer([27, 105, 0, 0, 27, 29, 97, 0]) : new Buffer([27, 33, 0, 28, 33, 0]);
+    var d_start_bytes       = options.isStar ? new Buffer([27, 105, 0, 1]) : new Buffer([27, 33, 32, 28, 33, 4]);
+    var d_end_bytes         = options.isStar ? new Buffer([27, 105, 0, 0]) : new Buffer([27, 33, 0, 28, 33, 0]);
 
     // centered
-    var align_center_bytes  = new Buffer([27, 97, 1]);
-    var align_left_bytes    = new Buffer([27, 97, 0]);
-    var align_right_bytes    = new Buffer([27, 97, 2]);
+    var align_center_bytes  = options.isStar ? new Buffer([27, 29, 97, 1]) : new Buffer([27, 97, 1]);
+    var align_left_bytes    = options.isStar ? new Buffer([27, 29, 97, 0]) : new Buffer([27, 97, 0]);
+    var align_right_bytes   = options.isStar ? new Buffer([27, 29, 97, 2]) : new Buffer([27, 97, 2]);
     // Set the line spacing default value of 8 or 1mm
-    var default_space_bytes = new Buffer([27, 50]);
+    var default_space_bytes = options.isStar ? new Buffer([27, 122, 0]) : new Buffer([27, 50]);
     var none_space_bytes    = new Buffer([27, 51, 0]);
     var b_space_bytes       = new Buffer([27, 51, 120]);
     // Cut paper
-    var cut_bytes           = new Buffer([27, 105]);
+    var cut_bytes           = options.isStar ? new Buffer([27, 100, 51]) : new Buffer([27, 105]);
     // Play the cash box
-    var moneybox_bytes      = new Buffer([27, 112, 7]);
+    var moneybox_bytes      = options.isStar ? new Buffer([7]) : new Buffer([27, 112, 7]);
     // Beep { 27, 66, times, duration * 50ms }
-    var beep_bytes          = new Buffer([ 27, 66, 3, 2 ])
+    var beep_bytes          = options.isStar ? new Buffer([27, 29, 25, 7, 1, 1, 1]) : new Buffer([ 27, 66, 3, 2 ]);
 
-    var qr_model            = new Buffer([ 29, 40, 107, 3, 0, 49, 65, 50, 0 ]); //  27, 29, 121, 83, 48, 2
-    var qr_module_size      = new Buffer([ 29, 40, 107, 3, 0, 49, 67, 16 ]); // 27, 29, 121, 83, 49, 0
+    var qr_model            = options.isStar ? new Buffer([27, 29, 121, 83, 48, 2]) : new Buffer([ 29, 40, 107, 3, 0, 49, 65, 50, 0 ]); //  27, 29, 121, 83, 48, 2
+    var qr_module_size      = options.isStar ? new Buffer([27, 29, 121, 83, 50, 8]) : new Buffer([ 29, 40, 107, 3, 0, 49, 67, 16 ]); // 27, 29, 121, 83, 49, 0
     // var qr_cell_size        = new Buffer([27, 29, 121, 83, 50, 3]);
-    var qr_correction       = new Buffer([ 29, 40, 107, 3, 0, 49, 69, 51 ]); // 27, 29, 121, 68, 49, 3 
-    var qr_start            = new Buffer([ 29, 40, 107, 3, 0, 49, 81, 48 ]); // 27, 29, 121, 80
+    var qr_correction       = options.isStar ? new Buffer([27, 29, 121, 83, 49, 2]) : new Buffer([ 29, 40, 107, 3, 0, 49, 69, 51 ]); // 27, 29, 121, 68, 49, 3
+    var qr_start            = options.isStar ? new Buffer([27, 29, 121, 80]) : new Buffer([ 29, 40, 107, 3, 0, 49, 81, 48 ]); // 27, 29, 121, 80
 
     var bytes = new BufferHelper();
     bytes.concat(init_printer_bytes);
-    bytes.concat(default_space_bytes);
+    if (options.isStar) {
+      bytes.concat(set_charset);
+    }
+    // bytes.concat(default_space_bytes);
     var temp = "";
     for (var i = 0; i < text.length; i++)
     {
@@ -175,15 +182,15 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
                 if (index != -1)
                 {
                     var url = text.substring(i + 4, index);
-                    var qrLength = url.length + 3
+                    var qrLength = url.length
                     var pL = qrLength % 256
                     var pH = Math.floor(qrLength / 256)
                     bytes.concat(align_center_bytes);
                     bytes.concat(none_space_bytes);
                     bytes.concat(qr_model);
-                    bytes.concat(qr_module_size);
                     bytes.concat(qr_correction);
-                    bytes.concat(new Buffer([ 29, 40, 107, pL, pH, 49, 80, 48 ]));
+                    bytes.concat(qr_module_size);
+                    bytes.concat(options.isStar ? new Buffer([ 27, 29, 121, 68, 49, 0, pL, pH ]) : new Buffer([ 29, 40, 107, pL, pH, 49, 80, 48 ]));
                     bytes.concat(change_image_url_to_bytes(url));
                     bytes.concat(qr_start);
                     bytes.concat(default_space_bytes);
@@ -233,10 +240,16 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
             }
         }
         else if(ch == "\n"){
-            temp = temp + ch;
-            bytes.concat(iconv.encode(temp, options.encoding));
-            bytes.concat(reset_bytes);
-            temp = "";
+            if (options.isStar) {
+              bytes.concat(iconv.encode(temp, options.encoding));
+              bytes.concat(new_line);
+              temp = "";
+            } else {
+              temp = temp + ch;
+              bytes.concat(iconv.encode(temp, options.encoding));
+              bytes.concat(reset_bytes);
+              temp = "";
+            }
         }
         else
         {
@@ -256,6 +269,9 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     }
     if (options.beep){
         bytes.concat(beep_bytes)
+    }
+    if (options.isStar) {
+        bytes.concat(moneybox_bytes);
     }
     return bytes.toBuffer();
 }
