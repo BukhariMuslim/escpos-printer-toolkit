@@ -23,6 +23,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
         tailingLine: true,
         encoding: 'UTF8',
         isStar: true,
+        cash: false,
         ...options,
     }
     // Initialize the printer
@@ -270,7 +271,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     if (options.beep){
         bytes.concat(beep_bytes)
     }
-    if (options.isStar) {
+    if (options.cash) {
         bytes.concat(moneybox_bytes);
     }
     return bytes.toBuffer();
