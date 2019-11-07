@@ -173,7 +173,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
         index = text.indexOf("</QR>", i + 4);
         if (index != -1) {
           var url = text.substring(i + 4, index);
-          var qrLength = url.length
+          var qrLength = url.length + (options.isStar ? 0 : 3)
           var pL = qrLength % 256
           var pH = Math.floor(qrLength / 256)
           bytes.concat(align_center_bytes);
