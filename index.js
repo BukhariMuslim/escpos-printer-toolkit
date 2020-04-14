@@ -109,7 +109,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
   var beep_bytes = options.isStar ? new Buffer([27, 29, 25, 7, 1, 1, 1]) : new Buffer([27, 66, 3, 2]);
 
   var qr_model = options.isStar ? new Buffer([27, 29, 121, 83, 48, 2]) : new Buffer([29, 40, 107, 3, 0, 49, 65, 50, 0]); //  27, 29, 121, 83, 48, 2
-  var qr_module_size = options.isStar ? new Buffer([27, 29, 121, 83, 50, 8]) : new Buffer([29, 40, 107, 3, 0, 49, 67, 16]); // 27, 29, 121, 83, 49, 0
+  var qr_module_size = options.isStar ? new Buffer([27, 29, 121, 83, 50, 8]) : new Buffer([29, 40, 107, 3, 0, 49, 67, 15]); // 27, 29, 121, 83, 49, 0
   // var qr_cell_size        = new Buffer([27, 29, 121, 83, 50, 3]);
   var qr_correction = options.isStar ? new Buffer([27, 29, 121, 83, 49, 2]) : new Buffer([29, 40, 107, 3, 0, 49, 69, 51]); // 27, 29, 121, 68, 49, 3
   var qr_start = options.isStar ? new Buffer([27, 29, 121, 80]) : new Buffer([29, 40, 107, 3, 0, 49, 81, 48]); // 27, 29, 121, 80
